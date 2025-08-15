@@ -89,8 +89,8 @@ class DocumenterAgent:
             file_path=self._config.repo_path / "README.md",
         )
 
-    async def _run_agent(self, agent: Agent, user_prompt: str, file_path: Path):
-        trace.get_current_span().add_event(name=f"Running {agent.name}", attributes={"agent_name": agent.name})
+    async def _run_agent(self, agent: Agent[None, DocumenterResult], user_prompt: str, file_path: Path):
+        trace.get_current_span().add_event(name=f"Running {agent.name}", attributes={"agent_name": agent.name or "Unknown Agent"})
 
         try:
             Logger.info(f"Running {agent.name}")

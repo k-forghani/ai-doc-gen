@@ -142,14 +142,14 @@ class AnalyzerAgent:
             Logger.warning(f"Some analysis files not found: {missing_files_str}")
             raise ValueError(f"Some analysis files not found: {missing_files_str}")
 
-    async def _run_agent(self, agent: Agent, user_prompt: str, file_path: Path):
-        trace.get_current_span().add_event(name=f"Running {agent.name}", attributes={"agent_name": agent.name})
+    async def _run_agent(self, agent: Agent[None, AnalyzerResult], user_prompt: str, file_path: Path):
+        trace.get_current_span().add_event(name=f"Running {agent.name}", attributes={"agent_name": agent.name or "Unknown Agent"})
 
         try:
             Logger.info(f"Running {agent.name}")
             start_time = time.time()
             async with agent:
-                result: AgentRunResult = await agent.run(
+                result: AgentRunResult[AnalyzerResult] = await agent.run(
                     user_prompt=user_prompt,
                     output_type=AnalyzerResult,
                 )
@@ -219,7 +219,7 @@ class AnalyzerAgent:
         return model, settings
 
     @property
-    def _structure_analyzer_agent(self) -> Agent:
+    def _structure_analyzer_agent(self) -> Agent[None, AnalyzerResult]:
         model, model_settings = self._llm_model
 
         return Agent(
@@ -237,14 +237,14 @@ class AnalyzerAgent:
         )
 
     @property
-    def _data_flow_analyzer_agent(self) -> Agent:
+    def _data_flow_analyzer_agent(self) -> Agent[None, AnalyzerResult]:
         model, model_settings = self._llm_model
 
         return Agent(
             name="Data Flow Analyzer",
             model=model,
             model_settings=model_settings,
-            output_type=str,
+            output_type=AnalyzerResult,
             retries=2,
             system_prompt=self._render_prompt("agents.data_flow_analyzer.system_prompt"),
             tools=[
@@ -255,14 +255,14 @@ class AnalyzerAgent:
         )
 
     @property
-    def _dependency_analyzer_agent(self) -> Agent:
+    def _dependency_analyzer_agent(self) -> Agent[None, AnalyzerResult]:
         model, model_settings = self._llm_model
 
         return Agent(
             name="Dependency Analyzer",
             model=model,
             model_settings=model_settings,
-            output_type=str,
+            output_type=AnalyzerResult,
             retries=2,
             system_prompt=self._render_prompt("agents.dependency_analyzer.system_prompt"),
             tools=[
@@ -273,14 +273,14 @@ class AnalyzerAgent:
         )
 
     @property
-    def _request_flow_analyzer_agent(self) -> Agent:
+    def _request_flow_analyzer_agent(self) -> Agent[None, AnalyzerResult]:
         model, model_settings = self._llm_model
 
         return Agent(
             name="Request Flow Analyzer",
             model=model,
             model_settings=model_settings,
-            output_type=str,
+            output_type=AnalyzerResult,
             retries=2,
             system_prompt=self._render_prompt("agents.request_flow_analyzer.system_prompt"),
             tools=[
