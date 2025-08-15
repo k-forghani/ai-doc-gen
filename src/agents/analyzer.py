@@ -291,7 +291,7 @@ class AnalyzerAgent:
         )
 
     @property
-    def _api_analyzer_agent(self) -> Agent:
+    def _api_analyzer_agent(self) -> Agent[None, AnalyzerResult]:
         model, model_settings = self._llm_model
 
         return Agent(
@@ -305,7 +305,6 @@ class AnalyzerAgent:
                 FileReadTool().get_tool(),
                 ListFilesTool().get_tool(),
             ],
-            mcp_servers=[],
             instrument=True,
         )
 

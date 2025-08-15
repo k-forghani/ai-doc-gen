@@ -160,7 +160,7 @@ class DocumenterAgent:
         return model, settings
 
     @property
-    def _documenter_agent(self) -> Agent:
+    def _documenter_agent(self) -> Agent[None, DocumenterResult]:
         model, model_settings = self._llm_model
 
         return Agent(
